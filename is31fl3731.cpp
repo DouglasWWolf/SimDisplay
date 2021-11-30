@@ -275,10 +275,10 @@ const unsigned char font[] =
 //=============================================================================================
 void IS31FL3731::transmit(const uint8_t* data, size_t length)
 {
-	Wire.beginTransmission(m_i2c_address);
-	Wire.write(data, length);
-	Wire.endTransmission();
-	Wire.flush();
+    Wire.beginTransmission(m_i2c_address);
+    Wire.write(data, length);
+    Wire.endTransmission();
+    Wire.flush();
 }
 //=============================================================================================
 
@@ -288,8 +288,8 @@ void IS31FL3731::transmit(const uint8_t* data, size_t length)
 //=============================================================================================
 void IS31FL3731::write_reg(unsigned char address, unsigned char value)
 {
-	unsigned char buffer[2] = { address, value };
-	transmit(buffer, 2);
+    unsigned char buffer[2] = { address, value };
+    transmit(buffer, 2);
 }
 //=============================================================================================
 
@@ -304,7 +304,7 @@ void IS31FL3731::display_image()
     uint16_t row_bits, mask;
 
     // This holds the address of a PWM register plus 1 PWM value per column
-	unsigned char cmd[MAX_COLS + 1];
+    unsigned char cmd[MAX_COLS + 1];
 
     // Because our physical number of LEDS columns might be fewer than the 
     // total number our device supports, ensure that all PWM values default to 0
@@ -314,31 +314,31 @@ void IS31FL3731::display_image()
     // upside-down images
     if (m_orientation > 0) goto orientation_1;
 
-	// Loop through each row of the display from top to bottom
-	for (row = 0; row < PHYS_ROWS; ++row)
-	{
-		// The first byte of the message is the PWM BASE register for this row of LEDs
-		cmd[0] = PWM_BASE_REG + (row * 16);
+    // Loop through each row of the display from top to bottom
+    for (row = 0; row < PHYS_ROWS; ++row)
+    {
+        // The first byte of the message is the PWM BASE register for this row of LEDs
+        cmd[0] = PWM_BASE_REG + (row * 16);
 
-		// Fetch the bits we want to display for this row
-		row_bits = m_bitmap[row];
+        // Fetch the bits we want to display for this row
+        row_bits = m_bitmap[row];
 
-		// Create a mask that has a 1 in the highest order bit
-		mask = (1 << 15);
+        // Create a mask that has a 1 in the highest order bit
+        mask = (1 << 15);
 
-		// Loop through each column, turning a bit into a PWM value
-		for (col = 0; col < PHYS_COLS; ++col)
-		{
-			if (row_bits & mask)
-				cmd[col + 1] = m_brightness;
-			else
-				cmd[col + 1] = 0;
-			mask >>= 1;
-		}
+        // Loop through each column, turning a bit into a PWM value
+        for (col = 0; col < PHYS_COLS; ++col)
+        {
+            if (row_bits & mask)
+                cmd[col + 1] = m_brightness;
+            else
+                cmd[col + 1] = 0;
+            mask >>= 1;
+        }
 
-		// And transmit the row of PWM values to the device
-		transmit(cmd, sizeof cmd);
-	}
+        // And transmit the row of PWM values to the device
+        transmit(cmd, sizeof cmd);
+    }
 
     // We're done transmitting our bitmap to the device
     return;
@@ -383,8 +383,8 @@ orientation_1:
 //=============================================================================================
 void IS31FL3731::init(int i2c_address, unsigned char brightness)
 {
-	// Save the I2C address for future use
-	m_i2c_address = i2c_address;
+    // Save the I2C address for future use
+    m_i2c_address = i2c_address;
 
     // Save the PWM value we want to use to turn an LED on
     m_brightness = brightness;
@@ -392,25 +392,25 @@ void IS31FL3731::init(int i2c_address, unsigned char brightness)
     // We start out in right-side-up orientation
     m_orientation = 0;
 
-	// Clear the bitmap.  This is the equivalent of a "clear the screen"
-	memset(m_bitmap, 0, sizeof m_bitmap);
+    // Clear the bitmap.  This is the equivalent of a "clear the screen"
+    memset(m_bitmap, 0, sizeof m_bitmap);
 
-	// Select frame #0
-	write_reg(BANK_SELECT_REG, 0);
+    // Select frame #0
+    write_reg(BANK_SELECT_REG, 0);
 
-	// Send the PWM equavalent of our bitmap to the device
-	display_image();
+    // Send the PWM equavalent of our bitmap to the device
+    display_image();
 
-	// This writes a 1-bit to the "enable" bit for every LED
-	unsigned char enable_cmd[] =
-	{
-		LED_CTRL_BASE_REG,
-		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
-	};
+    // This writes a 1-bit to the "enable" bit for every LED
+    unsigned char enable_cmd[] =
+    {
+        LED_CTRL_BASE_REG,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+        0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+    };
 
-	// Send the "enable all LEDs" command
-	transmit(enable_cmd, sizeof enable_cmd);
+    // Send the "enable all LEDs" command
+    transmit(enable_cmd, sizeof enable_cmd);
 }
 //=============================================================================================
 
@@ -473,10 +473,10 @@ void IS31FL3731::print(int display_row, int display_col, uint8_t c)
 //=============================================================================================
 void IS31FL3731::print(char c1, char c2)
 {
-	// Clear all bits to off
-	memset(m_bitmap, 0, sizeof m_bitmap);
+    // Clear all bits to off
+    memset(m_bitmap, 0, sizeof m_bitmap);
 
-	// Print the two characters
+    // Print the two characters
     print(0, 2, (unsigned char)c1);
     print(0, 8, (unsigned char)c2);
 
@@ -520,7 +520,7 @@ void IS31FL3731::print(int value)
 //=============================================================================================
 
 
-
+ 
 
 //=============================================================================================
 // print() - Print a rounded floating point value between -9 and 99
