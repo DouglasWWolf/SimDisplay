@@ -411,7 +411,7 @@ void IS31FL3731::vertical_bar(int column, bool update_image)
     // Turn the column into a bit-mask
     int mask = 1 << (15 - column);
 
-    // And set that bit on in each row
+    // Turn that bit on in each row
     for (int row = 0; row < PHYS_ROWS; ++row) m_bitmap[row] |= mask;
 
     // And optionally update the display with this new vertical bar
