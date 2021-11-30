@@ -418,13 +418,34 @@ void IS31FL3731::init(int i2c_address, unsigned char brightness)
 //=============================================================================================
 // set_brightness() - Define the PWM value of an "on" pixel and optionally update the display
 //=============================================================================================
-void IS31FL3731::set_brightness(unsigned char brightness, bool update)
+void IS31FL3731::set_brightness(unsigned char brightness, bool update_image)
 {
     // Save the PWM value we want to use for an "on" pixel
     m_brightness = brightness;
 
     // And optionally update the display with this new brightness
-    if (update) display_image();
+    if (update_image) display_image();
+}
+//=============================================================================================
+
+
+
+//=============================================================================================
+// vertical_bar() - Draws a vertical bar at the specified column
+//=============================================================================================
+void IS31FL3731::vertical_bar(int column, bool update_image)
+{
+    // Ensure that the column number the caller gave us physically exists
+    if (column < 0 || column >= PHYS_COLS) return;
+
+    // Turn the column into a bit-mask
+    int mask = 1 << (15 - column);
+
+    // And set that bit on in each row
+    for (int row = 0; row < PHYS_ROWS; ++row) m_bitmap[row] |= mask;
+
+    // And optionally update the display with this new vertical bar
+    if (update_image) display_image();
 }
 //=============================================================================================
 

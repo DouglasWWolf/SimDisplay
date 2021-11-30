@@ -14,10 +14,13 @@ public:
     void	init(int i2c_address, unsigned char brightness = 255);
 
     // Call this to set the brightness of an "on" LED
-    void	set_brightness(unsigned char brightness, bool update = false);
+    void	set_brightness(unsigned char brightness, bool update_display = false);
 
     // Call this to determine the display orientation.  0 = Normal, 1 = Upside down
     void	set_orientation(int orientation) { m_orientation = orientation; }
+
+    // Call this to draw a vertical bar in a given column
+    void    vertical_bar(int column, bool update_display = true);
 
     // Call this to print a pair of characters
     void	print(char c1, char c2);

@@ -15,4 +15,6 @@ int main()
     
     display.set_orientation(0);
     display.set_brightness(100, true);
+    display.set_brightness(255);
+    display.vertical_bar(1);
 }
