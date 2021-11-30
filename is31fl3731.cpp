@@ -275,10 +275,10 @@ const unsigned char font[] =
 //=============================================================================================
 void IS31FL3731::transmit(const uint8_t* data, size_t length)
 {
+    Wire.flush();
     Wire.beginTransmission(m_i2c_address);
     Wire.write(data, length);
     Wire.endTransmission();
-    Wire.flush();
 }
 //=============================================================================================
 
