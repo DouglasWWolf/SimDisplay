@@ -314,7 +314,6 @@ void IS31FL3731::display_image()
     // that corresponds to a physical LED
     uint16_t initial_mask = (m_orientation == 0) ? (1 << 15) : (1 << missing_led_cols);
 
-
     // Loop through each row of the display from top to bottom
     for (int row = 0; row < PHYS_ROWS; ++row)
     {
