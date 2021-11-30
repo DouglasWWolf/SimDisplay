@@ -301,7 +301,6 @@ void IS31FL3731::write_reg(unsigned char address, unsigned char value)
 void IS31FL3731::display_image()
 {
     int row, col;
-    uint16_t row_bits, mask;
 
     // This holds the address of a PWM register plus 1 PWM value per column
     unsigned char cmd[MAX_COLS + 1], *p_cmd;
@@ -322,22 +321,12 @@ void IS31FL3731::display_image()
         // The first byte of the message is the PWM BASE register for this row of LEDs
         *p_cmd++ = PWM_BASE_REG + (row * 16);
 
-        if (m_orientation == 0)
-        {
-            // Fetch the bits we want to display for this row
-            row_bits = m_bitmap[row];
+        // Fetch the LED-is-on bits for the bitmap-row we care about
+        uint16_t row_bits = (m_orientation == 0) ? m_bitmap[row] : m_bitmap[PHYS_ROWS - 1 - row];
 
-            // Create a mask that has a 1 in the highest order bit
-            mask = (1 << 15);
-        }
-        else
-        {
-            // Fetch the bits we want to display for this row
-            row_bits = m_bitmap[PHYS_ROWS - 1 - row];
-
-            // Create a mask that has a 1 in lowest order bit that corresponds to a real LED
-            mask = 1 << missing_led_cols;
-        }
+        // Create a bitmask with a 1 in either the left-most or right-most bit 
+        // that corresponds to a physical LED
+        uint16_t mask = (m_orientation == 0) ? (1 << 15) : (1 << missing_led_cols);
 
         // Loop through each column, turning a bit into a PWM value
         for (col = 0; col < PHYS_COLS; ++col)
