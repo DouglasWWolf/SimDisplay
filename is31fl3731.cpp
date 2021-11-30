@@ -304,7 +304,7 @@ void IS31FL3731::display_image()
     uint16_t row_bits, mask;
 
     // This holds the address of a PWM register plus 1 PWM value per column
-    unsigned char cmd[MAX_COLS + 1];
+    unsigned char cmd[MAX_COLS + 1], *p_cmd;
 
     // Because our physical number of LEDS columns might be fewer than the 
     // total number our device supports, ensure that all PWM values default to 0
@@ -317,8 +317,11 @@ void IS31FL3731::display_image()
     // Loop through each row of the display from top to bottom
     for (row = 0; row < PHYS_ROWS; ++row)
     {
+        // Point to the command buffer
+        p_cmd = cmd;
+
         // The first byte of the message is the PWM BASE register for this row of LEDs
-        cmd[0] = PWM_BASE_REG + (row * 16);
+        *p_cmd++ = PWM_BASE_REG + (row * 16);
 
         // Fetch the bits we want to display for this row
         row_bits = m_bitmap[row];
@@ -329,10 +332,7 @@ void IS31FL3731::display_image()
         // Loop through each column, turning a bit into a PWM value
         for (col = 0; col < PHYS_COLS; ++col)
         {
-            if (row_bits & mask)
-                cmd[col + 1] = m_brightness;
-            else
-                cmd[col + 1] = 0;
+            *p_cmd++ = (row_bits & mask) ? m_brightness : 0;
             mask >>= 1;
         }
 
@@ -348,8 +348,11 @@ orientation_1:
     // Loop through each row of the display, from bottom to top
     for (row = 0; row < PHYS_ROWS; ++row)
     {
+        // Point to the command buffer
+        p_cmd = cmd;
+
         // The first byte of the message is the PWM BASE register for this row of LEDs
-        cmd[0] = PWM_BASE_REG + (row * 16);
+        *p_cmd++ = PWM_BASE_REG + (row * 16);
 
         // Fetch the bits we want to display for this row
         row_bits = m_bitmap[PHYS_ROWS - 1 - row];
@@ -363,10 +366,7 @@ orientation_1:
         // Loop through each column, turning a bit into a PWM value
         for (col = 0; col < PHYS_COLS; ++col)
         {
-            if (row_bits & mask)
-                cmd[col + 1] = m_brightness;
-            else
-                cmd[col + 1] = 0;
+            *p_cmd++ = (row_bits & mask) ? m_brightness : 0;
             mask <<= 1;
         }
 
