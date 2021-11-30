@@ -300,8 +300,6 @@ void IS31FL3731::write_reg(unsigned char address, unsigned char value)
 //=============================================================================================
 void IS31FL3731::display_image()
 {
-    int row, col;
-
     // This holds the address of a PWM register plus 1 PWM value per column
     unsigned char cmd[MAX_COLS + 1], *p_cmd;
 
@@ -313,7 +311,7 @@ void IS31FL3731::display_image()
     memset(cmd, 0, sizeof cmd);
 
     // Loop through each row of the display from top to bottom
-    for (row = 0; row < PHYS_ROWS; ++row)
+    for (int row = 0; row < PHYS_ROWS; ++row)
     {
         // Point to the command buffer
         p_cmd = cmd;
@@ -329,7 +327,7 @@ void IS31FL3731::display_image()
         uint16_t mask = (m_orientation == 0) ? (1 << 15) : (1 << missing_led_cols);
 
         // Loop through each column, turning a bit into a PWM value
-        for (col = 0; col < PHYS_COLS; ++col)
+        for (int col = 0; col < PHYS_COLS; ++col)
         {
             *p_cmd++ = (row_bits & mask) ? m_brightness : 0;
             if (m_orientation == 0)
