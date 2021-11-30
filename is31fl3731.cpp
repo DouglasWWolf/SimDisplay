@@ -313,10 +313,6 @@ void IS31FL3731::display_image()
     // total number our device supports, ensure that all PWM values default to 0
     memset(cmd, 0, sizeof cmd);
 
-    // This routine has two different sections: one for right-side up image, and one for
-    // upside-down images
-    if (m_orientation > 0) goto orientation_1;
-
     // Loop through each row of the display from top to bottom
     for (row = 0; row < PHYS_ROWS; ++row)
     {
@@ -326,48 +322,31 @@ void IS31FL3731::display_image()
         // The first byte of the message is the PWM BASE register for this row of LEDs
         *p_cmd++ = PWM_BASE_REG + (row * 16);
 
-        // Fetch the bits we want to display for this row
-        row_bits = m_bitmap[row];
-
-        // Create a mask that has a 1 in the highest order bit
-        mask = (1 << 15);
-
-        // Loop through each column, turning a bit into a PWM value
-        for (col = 0; col < PHYS_COLS; ++col)
+        if (m_orientation == 0)
         {
-            *p_cmd++ = (row_bits & mask) ? m_brightness : 0;
-            mask >>= 1;
+            // Fetch the bits we want to display for this row
+            row_bits = m_bitmap[row];
+
+            // Create a mask that has a 1 in the highest order bit
+            mask = (1 << 15);
+        }
+        else
+        {
+            // Fetch the bits we want to display for this row
+            row_bits = m_bitmap[PHYS_ROWS - 1 - row];
+
+            // Create a mask that has a 1 in lowest order bit that corresponds to a real LED
+            mask = 1 << missing_led_cols;
         }
 
-        // And transmit the row of PWM values to the device
-        transmit(cmd, sizeof cmd);
-    }
-
-    // We're done transmitting our bitmap to the device
-    return;
-
-orientation_1:
-
-    // Loop through each row of the display, from bottom to top
-    for (row = 0; row < PHYS_ROWS; ++row)
-    {
-        // Point to the command buffer
-        p_cmd = cmd;
-
-        // The first byte of the message is the PWM BASE register for this row of LEDs
-        *p_cmd++ = PWM_BASE_REG + (row * 16);
-
-        // Fetch the bits we want to display for this row
-        row_bits = m_bitmap[PHYS_ROWS - 1 - row];
-
-        // Create a mask that has a 1 in lowest order bit that corresponds to a real LED
-        mask = 1 << missing_led_cols;
-
         // Loop through each column, turning a bit into a PWM value
         for (col = 0; col < PHYS_COLS; ++col)
         {
             *p_cmd++ = (row_bits & mask) ? m_brightness : 0;
-            mask <<= 1;
+            if (m_orientation == 0)
+                mask >>= 1;
+            else
+                mask <<= 1;
         }
 
         // And transmit the row of PWM values to the device
