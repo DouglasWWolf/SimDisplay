@@ -306,7 +306,7 @@ void IS31FL3731::display_image()
     // Find out how many columns of LEDs are missing from the right-edge
     const int missing_led_cols = MAX_COLS - PHYS_COLS;
 
-    // Because our physical number of LEDS columns might be fewer than the 
+    // Because our physical number of LED columns might be fewer than the 
     // total number our device supports, ensure that all PWM values default to 0
     memset(cmd, 0, sizeof cmd);
 
