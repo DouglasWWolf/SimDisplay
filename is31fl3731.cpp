@@ -441,17 +441,14 @@ void IS31FL3731::print(int display_row, int display_col, uint8_t c)
     // Loop through each row of the character...
     for (int char_row = 0; char_row < CHAR_ROWS; ++char_row)
     {
-        // Figure out what line of the display we're about to modify
-        int display_line = char_row + display_row;
-        
         // If it's off the end of the display, we're done
-        if (display_line >= MAX_ROWS) break;
+        if (display_row >= MAX_ROWS) break;
         
         // Fetch the bits for this row of the character
         uint16_t bits = *character++;
 
         // And merge those bits into our display bitmap
-        m_bitmap[display_line] |= (bits << shift);
+        m_bitmap[display_row++] |= (bits << shift);
     }
 }
 //=============================================================================================
