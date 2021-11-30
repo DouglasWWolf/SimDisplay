@@ -306,6 +306,9 @@ void IS31FL3731::display_image()
     // This holds the address of a PWM register plus 1 PWM value per column
     unsigned char cmd[MAX_COLS + 1], *p_cmd;
 
+    // Find out how many columns of LEDs are missing from the right-edge
+    const int missing_led_cols = MAX_COLS - PHYS_COLS;
+
     // Because our physical number of LEDS columns might be fewer than the 
     // total number our device supports, ensure that all PWM values default to 0
     memset(cmd, 0, sizeof cmd);
@@ -356,9 +359,6 @@ orientation_1:
 
         // Fetch the bits we want to display for this row
         row_bits = m_bitmap[PHYS_ROWS - 1 - row];
-
-        // Find out how many columns of LEDs are missing from the right-edge
-        const int missing_led_cols = MAX_COLS - PHYS_COLS;
 
         // Create a mask that has a 1 in lowest order bit that corresponds to a real LED
         mask = 1 << missing_led_cols;
