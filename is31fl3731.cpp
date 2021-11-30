@@ -310,6 +310,11 @@ void IS31FL3731::display_image()
     // total number our device supports, ensure that all PWM values default to 0
     memset(cmd, 0, sizeof cmd);
 
+    // Create a bitmask with a 1 in either the left-most or right-most bit 
+    // that corresponds to a physical LED
+    uint16_t initial_mask = (m_orientation == 0) ? (1 << 15) : (1 << missing_led_cols);
+
+
     // Loop through each row of the display from top to bottom
     for (int row = 0; row < PHYS_ROWS; ++row)
     {
@@ -322,9 +327,9 @@ void IS31FL3731::display_image()
         // Fetch the LED-is-on bits for the bitmap-row we care about
         uint16_t row_bits = (m_orientation == 0) ? m_bitmap[row] : m_bitmap[PHYS_ROWS - 1 - row];
 
-        // Create a bitmask with a 1 in either the left-most or right-most bit 
-        // that corresponds to a physical LED
-        uint16_t mask = (m_orientation == 0) ? (1 << 15) : (1 << missing_led_cols);
+        // The mask for this row starts with a 1 in either the left-most or right-most bit
+        // that coreresponds to a physical LED
+        uint16_t mask = initial_mask;
 
         // Loop through each column, turning a bit into a PWM value
         for (int col = 0; col < PHYS_COLS; ++col)
